@@ -6,12 +6,12 @@
 #    By: mdebelle <mdebelle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 18:33:59 by mdebelle          #+#    #+#              #
-#    Updated: 2015/12/27 09:50:44 by tsanzey          ###   ########.fr        #
+#    Updated: 2015/12/29 19:23:09 by tsanzey          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = fillit
-SRC = main.c 
+NAME = ft_ls
+SRC = main.c info.c 
 
 OBJ = $(SRC:%.c=obj/%.o)
 
@@ -25,19 +25,27 @@ all: $(NAME)
 
 $(NAME): obj $(OBJ)
 	@make -s -C $(LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(INC) -L$(LIB) -lft
+	@$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(INC) -L$(LIB) -lft
+	@echo "\033[0;32m  (\_/)"
+	@echo "\033[0;32m =(^.^)="
+	@echo "\033[0;32m ( )_( )"
+	@echo "\033[1;33m Rabbit\033[0m : $(NAME) is\033[0;32m ready"
 
-obj/%.o: src/%.c
+obj/%.o: %.c
 	$(CXX) $(CXXFLAGS) $(INC) -o $@ -c $< -I$(LIB)
 
 obj:
 	mkdir -p obj/
 
 clean:
-	rm -rf obj
+	@rm -rf obj
 
 fclean: clean
-	rm -rf $(NAME)
+	@echo "\033[0;31m ___( o)>"
+	@echo "\033[0;31m \ <_. )"
+	@echo "\033[0;31m   --- "
+	@echo "\033[1;33m Duck\033[0m : $(NAME) is\033[0;31m deleted"
+	@rm -rf $(NAME)
 
 re: fclean all
 

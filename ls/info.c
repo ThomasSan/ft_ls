@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2015/12/28 15:12:22 by tsanzey          ###   ########.fr       */
+/*   Updated: 2015/12/29 19:23:12 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	ft_print_beforelinefeed(char *s)
 	int	i;
 
 	i = 4;
-	while (i < 19)
+	while (i < 16)
 	{
 		ft_putchar(s[i]);
 		i++;
