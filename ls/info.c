@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2015/12/29 19:23:12 by tsanzey          ###   ########.fr       */
+/*   Updated: 2015/12/29 20:09:56 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ void	ft_print_beforelinefeed(char *s)
 	ft_putchar(' ');
 }
 
-void	ft_inspect_file(char *name)
+void	ft_printrights(char *name)
 {
-    struct stat filestat;
+	    struct stat filestat;
 	if(stat(name, &filestat) < 0)
         	ft_putstr("error");
 	ft_putstr( (S_ISDIR(filestat.st_mode)) ? "d" : "-");
@@ -45,6 +45,14 @@ void	ft_inspect_file(char *name)
     ft_putstr( (filestat.st_mode & S_IROTH) ? "r" : "-");
     ft_putstr( (filestat.st_mode & S_IWOTH) ? "w" : "-");
     ft_putstr( (filestat.st_mode & S_IXOTH) ? "x\t" : "-\t");
+}
+
+void	ft_inspect_file(char *name)
+{
+    struct stat filestat;
+	if(stat(name, &filestat) < 0)
+        	ft_putstr("error");
+    ft_printrights(name);
 	ft_putnbr(filestat.st_nlink);
 	ft_putchar('\t');
 	struct passwd *pwd = getpwuid(filestat.st_uid);
