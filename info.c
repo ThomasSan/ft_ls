@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2015/12/29 20:09:56 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/02 15:44:23 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,27 +32,27 @@ void	ft_print_beforelinefeed(char *s)
 
 void	ft_printrights(char *name)
 {
-	    struct stat filestat;
-	if(stat(name, &filestat) < 0)
-        	ft_putstr("error");
+	struct stat filestat;
+
+	stat(name, &filestat);
 	ft_putstr( (S_ISDIR(filestat.st_mode)) ? "d" : "-");
-    ft_putstr( (filestat.st_mode & S_IRUSR) ? "r" : "-");
-    ft_putstr( (filestat.st_mode & S_IWUSR) ? "w" : "-");
-    ft_putstr( (filestat.st_mode & S_IXUSR) ? "x" : "-");
-    ft_putstr( (filestat.st_mode & S_IRGRP) ? "r" : "-");
-    ft_putstr( (filestat.st_mode & S_IWGRP) ? "w" : "-");
-    ft_putstr( (filestat.st_mode & S_IXGRP) ? "x" : "-");
-    ft_putstr( (filestat.st_mode & S_IROTH) ? "r" : "-");
-    ft_putstr( (filestat.st_mode & S_IWOTH) ? "w" : "-");
-    ft_putstr( (filestat.st_mode & S_IXOTH) ? "x\t" : "-\t");
+	ft_putstr( (filestat.st_mode & S_IRUSR) ? "r" : "-");
+	ft_putstr( (filestat.st_mode & S_IWUSR) ? "w" : "-");
+	ft_putstr( (filestat.st_mode & S_IXUSR) ? "x" : "-");
+	ft_putstr( (filestat.st_mode & S_IRGRP) ? "r" : "-");
+	ft_putstr( (filestat.st_mode & S_IWGRP) ? "w" : "-");
+	ft_putstr( (filestat.st_mode & S_IXGRP) ? "x" : "-");
+	ft_putstr( (filestat.st_mode & S_IROTH) ? "r" : "-");
+	ft_putstr( (filestat.st_mode & S_IWOTH) ? "w" : "-");
+	ft_putstr( (filestat.st_mode & S_IXOTH) ? "x\t" : "-\t");
 }
 
 void	ft_inspect_file(char *name)
 {
-    struct stat filestat;
-	if(stat(name, &filestat) < 0)
-        	ft_putstr("error");
-    ft_printrights(name);
+	struct stat filestat;
+
+	stat(name, &filestat);
+	ft_printrights(name);
 	ft_putnbr(filestat.st_nlink);
 	ft_putchar('\t');
 	struct passwd *pwd = getpwuid(filestat.st_uid);

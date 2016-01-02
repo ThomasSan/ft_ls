@@ -6,7 +6,7 @@
 #    By: mdebelle <mdebelle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 18:33:59 by mdebelle          #+#    #+#              #
-#    Updated: 2015/12/30 16:34:30 by tsanzey          ###   ########.fr        #
+#    Updated: 2016/01/02 11:45:16 by tsanzey          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ all: $(NAME)
 
 $(NAME): obj $(OBJ)
 	@make -s -C $(LIB)
-	@$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(INC) -L$(LIB) -lft
+	@$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(INC) -L$(LIB) -lft -g
 	@echo "\033[0;32m  (\_/)"
 	@echo "\033[0;32m =(^.^)="
 	@echo "\033[0;32m ( )_( )"
