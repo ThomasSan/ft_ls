@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/27 10:58:57 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/02 17:55:14 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/06 17:15:54 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,18 @@ void	ft_init_option(t_opt *opt)
 	opt->opt_rec = 0;
 }
 
+void	ft_init_list(t_lst *l)
+{
+	l->name = NULL;
+	l->right[0] = 0;
+	l->uid = NULL;
+	l->gid = NULL;
+	l->time = NULL;
+	l->links = 0;
+	l->size = 0;
+	l->next = NULL;
+}
+
 void	displaytab(char **tab)
 {
 	int		i;
@@ -51,46 +63,81 @@ void	displaytab(char **tab)
 	}
 }
 
-int		main(int ac, char **av)
+void	ft_display(DIR *dirp, t_opt *opt, char *name)
 {
-	int				i;
-	int				files;
-	char			**tab;
-	DIR				*dirp;
 	struct dirent	*dp;
-	t_opt			opt;
+	int				total;
+	(void)name;
+	(void)opt;
 
-	i = 1;
-	files = 0;
-	ft_init_option(&opt);
-	files =	ft_parseoption(ac, av, &opt);
-	tab = (char **)malloc(sizeof(char *) * (files + 1));
-	ft_filesintab(ac, av, tab);
-	printf("tab before sort\n");	
-	displaytab(tab);
-	ft_sorttab(tab, files);
-	printf("tab after sort\n");	
-	displaytab(tab);
+	total = 0;
+	/*if (opt->opt_l == 1)
+	{
+		ft_putstr(name);
+		ft_putstr(":\n");*/
+		while ((dp = readdir(dirp)) != NULL)
+		{
+	//		if(dp->d_name[0] != '.')
+	//		{
+				ft_inspect_file(dp->d_name);
+				ft_putendl(dp->d_name);
+	//			total = ft_get_total(dp->d_name, total);
+	//		}
+		}
+/*	}
+
+	else
+		while ((dp = readdir(dirp)) != NULL)
+		{
+			if (dp->d_name[0] != '.')
+				ft_putendl(dp->d_name);
+		}
+	if (opt->opt_l == 1)
+	{
+		ft_putstr("total ");
+		ft_putnbr(total);
+	}*/
+}
+void	send_to_display(int files, t_opt *opt, char **tab)
+{
+	DIR *dirp;
+	int i;
+
+	i = 0;
 	while (i < files)
 	{
-		if (ac == 1)
-			dirp = opendir(".");
-		else
-			dirp = opendir(tab[i]);
+		dirp = opendir(tab[i]);
 		if (dirp == NULL)
 		{
 			ft_errordir(tab[i]);
-			return (0);
+			exit(0);
 		}
-		while ((dp = readdir(dirp)) != NULL)
-		{
-			if (opt.opt_l == 1)
-				ft_inspect_file(dp->d_name);
-			ft_putendl(dp->d_name);
-		}
+		ft_display(dirp, opt, tab[i]);
 		closedir(dirp);
 		i++;
 	}
+	if (files == 0)
+	{
+		dirp = opendir(".");
+		ft_display(dirp, opt, "ft_ls");
+		closedir(dirp);
+	}
+}
+int		main(int ac, char **av)
+{
+	int				files;
+	char			**tab;
+	t_opt			opt;
+	t_lst			l;
+	
+	files = 0;
+	ft_init_option(&opt);
+	ft_init_list(&l);
+	files =	ft_parseoption(ac, av, &opt);
+	tab = (char **)malloc(sizeof(char *) * (files + 1));
+	ft_filesintab(ac, av, tab);
+	ft_sorttab(tab, files);
+	send_to_display(files, &opt, tab);
 	free(tab);
 	return (0);
 }

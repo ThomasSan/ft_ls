@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/29 16:44:45 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/02 17:55:16 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/06 19:26:59 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,23 @@ int		ft_parseoption(int argc, char **argv, t_opt *opt)
 		if (ft_strncmp(argv[i], "-", 1) == 0)
 			ft_optionselect(argv[i], opt);
 		else
+		{
+			//add_name_tlst(l, argv[i]);
 			files++;
+		}
 		i++;
 	}
 	return (files);
+}
+
+void	add_name_tlst(t_lst **l, char *argv)
+{
+	t_lst	*new;
+
+	new = *l;
+	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
+		return ;
+	new->name = ft_strdup(argv);
 }
 
 void	ft_filesintab(int ac, char **av, char **tab)
@@ -70,9 +83,7 @@ void	ft_filesintab(int ac, char **av, char **tab)
 	j = 0;
 	while (i < ac)
 	{
-		if (ft_strncmp(av[i], "-", 1) == 0)
-			i++;
-		else
+		if (ft_strncmp(av[i], "-", 1) != 0)
 		{
 			tab[j] = ft_strdup(av[i]);
 			j++;
@@ -110,10 +121,7 @@ void	ft_sorttab(char **tab, int files)
 		while (i < files - 1)
 		{
 			if (ft_strncmp(tab[i], tab[i + 1], 1) > 0)
-			{
-				printf("strncmp est sup a 0\n");
 				ft_swapstrings(&tab[i], &tab[i + 1]);
-			}
 			i++;
 		}
 		j++;
