@@ -6,15 +6,11 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/27 10:58:57 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/06 17:15:54 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/07 19:41:03 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include "libft/libft.h"
+
 #include "ft_ls.h"
 
 void	ft_usage(char c)
@@ -42,7 +38,7 @@ void	ft_init_option(t_opt *opt)
 void	ft_init_list(t_lst *l)
 {
 	l->name = NULL;
-	l->right[0] = 0;
+	l->right = NULL;
 	l->uid = NULL;
 	l->gid = NULL;
 	l->time = NULL;
@@ -51,93 +47,102 @@ void	ft_init_list(t_lst *l)
 	l->next = NULL;
 }
 
-void	displaytab(char **tab)
+void	ft_lst_display(t_lst *l)
 {
-	int		i;
-
-	i = 0;
-	while (tab[i])
+	l = l->next;
+	while (l)
 	{
-		printf("tab = %s\n", tab[i]);
-		i++;
+		printf("%s%5d%8s%12s%9d%13s ", l->right, l->links, l->uid, l->gid, l->size, l->time);
+		printf("%s\n", l->name);
+		l = l->next;
 	}
 }
 
-void	ft_display(DIR *dirp, t_opt *opt, char *name)
+void	ft_display(DIR *dirp, t_opt *opt, t_lst *l)
 {
 	struct dirent	*dp;
 	int				total;
-	(void)name;
 	(void)opt;
 
 	total = 0;
 	/*if (opt->opt_l == 1)
+	  {
+	  ft_putstr(name);
+	  ft_putstr(":\n");*/
+	while ((dp = readdir(dirp)) != NULL)
 	{
-		ft_putstr(name);
-		ft_putstr(":\n");*/
-		while ((dp = readdir(dirp)) != NULL)
-		{
-	//		if(dp->d_name[0] != '.')
-	//		{
-				ft_inspect_file(dp->d_name);
-				ft_putendl(dp->d_name);
-	//			total = ft_get_total(dp->d_name, total);
-	//		}
-		}
-/*	}
+		//		if(dp->d_name[0] != '.')
+		//		{
+		ft_inspect_file(dp->d_name, &l);
+		/*while (l)
+		  {
+		  l = l->next;
+		  printf("name = %s\n", l->name);
+		  }*/
+		//			total = ft_get_total(dp->d_name, total);
+		//		}
+	}
+	/*	}
 
-	else
+		else
 		while ((dp = readdir(dirp)) != NULL)
 		{
-			if (dp->d_name[0] != '.')
-				ft_putendl(dp->d_name);
+		if (dp->d_name[0] != '.')
+		ft_putendl(dp->d_name);
 		}
-	if (opt->opt_l == 1)
-	{
+		if (opt->opt_l == 1)
+		{
 		ft_putstr("total ");
 		ft_putnbr(total);
-	}*/
+		}*/
 }
-void	send_to_display(int files, t_opt *opt, char **tab)
+void	send_to_display(int files, t_opt *opt, t_lst *val, t_lst *lst)
 {
 	DIR *dirp;
 	int i;
 
 	i = 0;
+	printf("number of files = %d\n", files);
 	while (i < files)
 	{
-		dirp = opendir(tab[i]);
+		dirp = opendir(val->name);
+		printf("Opening Dir = %s\n", val->name);
 		if (dirp == NULL)
 		{
-			ft_errordir(tab[i]);
+			printf("Error Opening Dir\n");
+			ft_errordir(val->name);
 			exit(0);
 		}
-		ft_display(dirp, opt, tab[i]);
+		ft_display(dirp, opt, lst);
 		closedir(dirp);
+		if (val->next)
+			val = val->next;
+		if (lst->next)
+			lst = lst->next;
 		i++;
 	}
 	if (files == 0)
 	{
 		dirp = opendir(".");
-		ft_display(dirp, opt, "ft_ls");
+		ft_display(dirp, opt, lst);
 		closedir(dirp);
 	}
 }
 int		main(int ac, char **av)
 {
 	int				files;
-	char			**tab;
 	t_opt			opt;
 	t_lst			l;
-	
+	t_lst			values;
+
 	files = 0;
 	ft_init_option(&opt);
 	ft_init_list(&l);
+	ft_init_list(&values);
 	files =	ft_parseoption(ac, av, &opt);
-	tab = (char **)malloc(sizeof(char *) * (files + 1));
-	ft_filesintab(ac, av, tab);
-	ft_sorttab(tab, files);
-	send_to_display(files, &opt, tab);
-	free(tab);
+	ft_files_to_lst(ac, av, &values);
+	//ft_sort_list(); A implementer...
+	send_to_display(files, &opt, &values, &l);
+	ft_lst_display(&l);
 	return (0);
 }

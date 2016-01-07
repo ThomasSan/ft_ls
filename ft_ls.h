@@ -6,12 +6,21 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 13:41:06 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/06 19:27:04 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/07 19:33:36 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LS_H
 # define FT_LS_H
+
+#include "libft/libft.h"
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 typedef struct		s_opt
 {
@@ -25,19 +34,27 @@ typedef struct		s_opt
 typedef struct		s_lst
 {
 	char			*name;
-	char			right[10];
+	char			*right;
 	char			*uid;
 	char			*gid;
 	char			*time;
 	int				links;
 	int				size;
-	struct s_list	*next;
+	struct s_lst	*next;
 }					t_lst;
 
-void				ft_inspect_file(t_lst *l);
+typedef struct		s_names
+{
+	char			*name;
+	struct s_names	*next;
+}					t_names;
+
+void				ft_inspect_file(char *str, t_lst **l);
 void				ft_usage(char c);
-void				ft_filesintab(int ac, char **av, char **tab);
+void				ft_files_to_lst(int ac, char **av, t_lst *lst);
 void				ft_sorttab(char **tab, int files);
+void				ft_errordir(char *s);
+void				ft_firstfile(char *name, t_lst **lst);
 int					ft_parseoption(int argc, char **argv, t_opt *opt);
 int					ft_get_total(char *name, int blocks);
 

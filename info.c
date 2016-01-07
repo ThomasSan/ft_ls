@@ -6,96 +6,81 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/06 19:27:01 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/07 19:41:05 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include "libft/libft.h"
-#include <sys/stat.h>
-#include <dirent.h>
-#include <pwd.h>
-#include <grp.h>
-#include <time.h>
+#include "ft_ls.h"
 
-void	ft_print_beforelinefeed(char *s)
+char	*ft_get_time(char *s)
 {
-	int	i;
+	char	*str;
+	int		i;
+	int		j;
 
 	i = 4;
+	j = 0;
+	if(!(str = (char *)malloc(sizeof(char) * 13)))
+		return (NULL);
 	while (i < 16)
 	{
-		ft_putchar(s[i]);
+		str[j] = s[i];
 		i++;
+		j++;
 	}
-	ft_putchar(' ');
+	str[j] = '\0';
+	return (str);
 }
 
-void	ft_printrights(char *name)
+char	*ft_getrights(char *name)
 {
 	struct stat filestat;
+	char		*str;
+
+	if (!(str = (char *)malloc(sizeof(char) * 11)))
+		return (NULL);
+	stat(name, &filestat);
+	str[0] = ((S_ISDIR(filestat.st_mode)) ? 'd' : '-');
+	str[1] = ((filestat.st_mode & S_IRUSR) ? 'r' : '-');
+	str[2] = ((filestat.st_mode & S_IWUSR) ? 'w' : '-');
+	str[3] = ((filestat.st_mode & S_IXUSR) ? 'x' : '-');
+	str[4] = ((filestat.st_mode & S_IRGRP) ? 'r' : '-');
+	str[5] = ((filestat.st_mode & S_IWGRP) ? 'w' : '-');
+	str[6] = ((filestat.st_mode & S_IXGRP) ? 'x' : '-');
+	str[7] = ((filestat.st_mode & S_IROTH) ? 'r' : '-');
+	str[8] = ((filestat.st_mode & S_IWOTH) ? 'w' : '-');
+	str[9] = ((filestat.st_mode & S_IXOTH) ? 'x' : '-');
+	str[10] = '\0';
+	return (str);
+}
+
+void	ft_inspect_file(char *name, t_lst **l)
+{
+	struct stat		filestat;
+	struct passwd	*pwd;
+	struct group	*grp;
+	t_lst			*new;
+	t_lst			*tmp;
 
 	stat(name, &filestat);
-	ft_putstr((S_ISDIR(filestat.st_mode)) ? "d" : "-");
-	ft_putstr((filestat.st_mode & S_IRUSR) ? "r" : "-");
-	ft_putstr((filestat.st_mode & S_IWUSR) ? "w" : "-");
-	ft_putstr((filestat.st_mode & S_IXUSR) ? "x" : "-");
-	ft_putstr((filestat.st_mode & S_IRGRP) ? "r" : "-");
-	ft_putstr((filestat.st_mode & S_IWGRP) ? "w" : "-");
-	ft_putstr((filestat.st_mode & S_IXGRP) ? "x" : "-");
-	ft_putstr((filestat.st_mode & S_IROTH) ? "r" : "-");
-	ft_putstr((filestat.st_mode & S_IWOTH) ? "w" : "-");
-	ft_putstr((filestat.st_mode & S_IXOTH) ? "x\t" : "-\t");
-}
-
-void	ft_inspect_file(char *name, t_lst *l)
-{
-	struct stat filestat;
-	struct passwd *pwd;
-	struct group *grp;
-
 	grp = getgrgid(filestat.st_gid);
 	pwd = getpwuid(filestat.st_uid);
-	stat(name, &filestat);
-	ft_printrights(name);
-	// editer printrights pour la faire renvoyer une chaine a stocker dans l->right;
-	ft_putnbr(filestat.st_nlink);
-	l->links = filestat.st_nlink;
-	ft_putchar('\t');
-	ft_putstr(pwd->pw_name);
-	l->uid = ft_strdup(pwd->pw_name);
-	ft_putstr("\t");
-	ft_putstr(grp->gr_name);
-	l->gid = ft_strdup(grp->gr_name);
-	ft_putstr("\t");
-	ft_putnbr(filestat.st_size);
-	l->size = filestat.st_size;
-	ft_putstr("\t");
-	ft_print_beforelinefeed(ctime(&filestat.st_mtime));
-	// editer ft_print_beforelinefeed pour renvoyer la date sous une *str dans l->time;
+	tmp = *l;
+	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
+		return ;
+	new->name = ft_strdup(name);
+	new->right = ft_getrights(name);
+	new->links = filestat.st_nlink;
+	new->uid = ft_strdup(pwd->pw_name);
+	new->gid = ft_strdup(grp->gr_name);
+	new->size = filestat.st_size;
+	new->time = ft_get_time(ctime(&filestat.st_mtime));
+	new->next = NULL;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
 }
-/* version originale
-void	ft_inspect_file(char *name)
-{
-	struct stat filestat;
-	struct passwd *pwd;
-	struct group *grp;
 
-	grp = getgrgid(filestat.st_gid);
-	pwd = getpwuid(filestat.st_uid);
-	stat(name, &filestat);
-	ft_printrights(name);
-	ft_putnbr(filestat.st_nlink);
-	ft_putchar('\t');
-	ft_putstr(pwd->pw_name);
-	ft_putstr("\t");
-	ft_putstr(grp->gr_name);
-	ft_putstr("\t");
-	ft_putnbr(filestat.st_size);
-	ft_putstr("\t");
-	ft_print_beforelinefeed(ctime(&filestat.st_mtime));
-}
-*/
 int		ft_get_total(char *name, int blocks)
 {
 	struct stat filestat;

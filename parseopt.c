@@ -6,13 +6,10 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/29 16:44:45 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/06 19:26:59 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/07 19:19:36 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "libft/libft.h"
 #include "ft_ls.h"
 
 int		ft_optionselect(char *s, t_opt *opt)
@@ -55,10 +52,7 @@ int		ft_parseoption(int argc, char **argv, t_opt *opt)
 		if (ft_strncmp(argv[i], "-", 1) == 0)
 			ft_optionselect(argv[i], opt);
 		else
-		{
-			//add_name_tlst(l, argv[i]);
 			files++;
-		}
 		i++;
 	}
 	return (files);
@@ -67,30 +61,35 @@ int		ft_parseoption(int argc, char **argv, t_opt *opt)
 void	add_name_tlst(t_lst **l, char *argv)
 {
 	t_lst	*new;
+	t_lst	*tmp;
 
-	new = *l;
+	tmp = *l;
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
 		return ;
 	new->name = ft_strdup(argv);
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = new;
+	printf("name is = %s\n", new->name);
+	new->next = NULL;
 }
 
-void	ft_filesintab(int ac, char **av, char **tab)
+void	ft_files_to_lst(int ac, char **av, t_lst *lst)
 {
 	int i;
-	int j;
 
 	i = 1;
-	j = 0;
-	while (i < ac)
+	while(i < ac)
 	{
 		if (ft_strncmp(av[i], "-", 1) != 0)
 		{
-			tab[j] = ft_strdup(av[i]);
-			j++;
+			if (opendir(av[i]) == NULL)
+				ft_errordir(av[i]);
+			else
+				add_name_tlst(&lst, av[i]);
 		}
 		i++;
 	}
-	tab[j] = NULL;
 }
 
 void	ft_swapstrings(char **s1, char **s2)
