@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/29 16:44:45 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/07 19:19:36 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/08 17:49:36 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,17 @@ int		ft_optionselect(char *s, t_opt *opt)
 	return (0);
 }
 
-int		ft_parseoption(int argc, char **argv, t_opt *opt)
+void	ft_parseoption(int argc, char **argv, t_opt *opt)
 {
 	int	i;
-	int	files;
 
 	i = 1;
-	files = 0;
 	while (i < argc)
 	{
 		if (ft_strncmp(argv[i], "-", 1) == 0)
 			ft_optionselect(argv[i], opt);
-		else
-			files++;
 		i++;
 	}
-	return (files);
 }
 
 void	add_name_tlst(t_lst **l, char *argv)
@@ -63,22 +58,23 @@ void	add_name_tlst(t_lst **l, char *argv)
 	t_lst	*new;
 	t_lst	*tmp;
 
-	tmp = *l;
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
 		return ;
 	new->name = ft_strdup(argv);
-	while (tmp->next)
+	tmp = *l;
+	while (tmp->next && tmp->next->name[0] < new->name[0])
 		tmp = tmp->next;
+	new->next = tmp->next;
 	tmp->next = new;
-	printf("name is = %s\n", new->name);
-	new->next = NULL;
 }
 
-void	ft_files_to_lst(int ac, char **av, t_lst *lst)
+int		ft_files_to_lst(int ac, char **av, t_lst *lst)
 {
 	int i;
+	int	files;
 
 	i = 1;
+	files = 0;
 	while(i < ac)
 	{
 		if (ft_strncmp(av[i], "-", 1) != 0)
@@ -86,10 +82,14 @@ void	ft_files_to_lst(int ac, char **av, t_lst *lst)
 			if (opendir(av[i]) == NULL)
 				ft_errordir(av[i]);
 			else
+			{
 				add_name_tlst(&lst, av[i]);
+				files++;
+			}
 		}
 		i++;
 	}
+	return (files);
 }
 
 void	ft_swapstrings(char **s1, char **s2)

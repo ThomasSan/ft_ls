@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/07 19:41:05 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/08 17:54:23 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,20 +36,40 @@ char	*ft_getrights(char *name)
 {
 	struct stat filestat;
 	char		*str;
+	struct stat linkstat;
 
 	if (!(str = (char *)malloc(sizeof(char) * 11)))
 		return (NULL);
 	stat(name, &filestat);
-	str[0] = ((S_ISDIR(filestat.st_mode)) ? 'd' : '-');
-	str[1] = ((filestat.st_mode & S_IRUSR) ? 'r' : '-');
-	str[2] = ((filestat.st_mode & S_IWUSR) ? 'w' : '-');
-	str[3] = ((filestat.st_mode & S_IXUSR) ? 'x' : '-');
-	str[4] = ((filestat.st_mode & S_IRGRP) ? 'r' : '-');
-	str[5] = ((filestat.st_mode & S_IWGRP) ? 'w' : '-');
-	str[6] = ((filestat.st_mode & S_IXGRP) ? 'x' : '-');
-	str[7] = ((filestat.st_mode & S_IROTH) ? 'r' : '-');
-	str[8] = ((filestat.st_mode & S_IWOTH) ? 'w' : '-');
-	str[9] = ((filestat.st_mode & S_IXOTH) ? 'x' : '-');
+	lstat(name, &linkstat);
+	if((linkstat.st_mode) > (filestat.st_mode))
+	{
+		printf("je suis un link\n");
+		str[0] = ((linkstat.st_mode & S_IFLNK) ? 'l' : '-');
+		str[1] = ((linkstat.st_mode & S_IRUSR) ? 'r' : '-');
+		str[2] = ((linkstat.st_mode & S_IWUSR) ? 'w' : '-');
+		str[3] = ((linkstat.st_mode & S_IXUSR) ? 'x' : '-');
+		str[4] = ((linkstat.st_mode & S_IRGRP) ? 'r' : '-');
+		str[5] = ((linkstat.st_mode & S_IWGRP) ? 'w' : '-');
+		str[6] = ((linkstat.st_mode & S_IXGRP) ? 'x' : '-');
+		str[7] = ((linkstat.st_mode & S_IROTH) ? 'r' : '-');
+		str[8] = ((linkstat.st_mode & S_IWOTH) ? 'w' : '-');
+		str[9] = ((linkstat.st_mode & S_IXOTH) ? 'x' : '-');
+	}
+	else
+	{
+		printf("je suis un autrechose\n");
+		str[0] = ((S_ISDIR(filestat.st_mode)) ? 'd' : '-');
+		str[1] = ((filestat.st_mode & S_IRUSR) ? 'r' : '-');
+		str[2] = ((filestat.st_mode & S_IWUSR) ? 'w' : '-');
+		str[3] = ((filestat.st_mode & S_IXUSR) ? 'x' : '-');
+		str[4] = ((filestat.st_mode & S_IRGRP) ? 'r' : '-');
+		str[5] = ((filestat.st_mode & S_IWGRP) ? 'w' : '-');
+		str[6] = ((filestat.st_mode & S_IXGRP) ? 'x' : '-');
+		str[7] = ((filestat.st_mode & S_IROTH) ? 'r' : '-');
+		str[8] = ((filestat.st_mode & S_IWOTH) ? 'w' : '-');
+		str[9] = ((filestat.st_mode & S_IXOTH) ? 'x' : '-');
+	}
 	str[10] = '\0';
 	return (str);
 }

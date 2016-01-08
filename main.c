@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/27 10:58:57 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/07 19:41:03 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/08 17:54:25 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,64 +47,50 @@ void	ft_init_list(t_lst *l)
 	l->next = NULL;
 }
 
-void	ft_lst_display(t_lst *l)
+void	ft_lst_display(t_lst *l, t_lst *val)
 {
 	l = l->next;
+	if(val->next)
+		val = val->next;
 	while (l)
 	{
+		if (ft_strcmp(l->name, ".") == 0 && val->name)
+		{
+			printf("%s:\ntotal 0\n", val->name);
+			val = val->next;
+		}
 		printf("%s%5d%8s%12s%9d%13s ", l->right, l->links, l->uid, l->gid, l->size, l->time);
 		printf("%s\n", l->name);
 		l = l->next;
 	}
 }
 
-void	ft_display(DIR *dirp, t_opt *opt, t_lst *l)
+void	ft_read_dir(DIR *dirp, t_opt *opt, t_lst *l)
 {
 	struct dirent	*dp;
 	int				total;
 	(void)opt;
 
 	total = 0;
-	/*if (opt->opt_l == 1)
-	  {
-	  ft_putstr(name);
-	  ft_putstr(":\n");*/
 	while ((dp = readdir(dirp)) != NULL)
-	{
-		//		if(dp->d_name[0] != '.')
-		//		{
 		ft_inspect_file(dp->d_name, &l);
-		/*while (l)
-		  {
-		  l = l->next;
-		  printf("name = %s\n", l->name);
-		  }*/
-		//			total = ft_get_total(dp->d_name, total);
-		//		}
-	}
-	/*	}
-
-		else
-		while ((dp = readdir(dirp)) != NULL)
-		{
-		if (dp->d_name[0] != '.')
-		ft_putendl(dp->d_name);
-		}
-		if (opt->opt_l == 1)
-		{
+/*
+	total = ft_get_total(dp->d_name, total);
+	if (opt->opt_l == 1)
 		ft_putstr("total ");
 		ft_putnbr(total);
-		}*/
+*/
 }
-void	send_to_display(int files, t_opt *opt, t_lst *val, t_lst *lst)
+void	ft_open_dir(int files, t_opt *opt, t_lst *val, t_lst *lst)
 {
 	DIR *dirp;
 	int i;
 
 	i = 0;
-	printf("number of files = %d\n", files);
 	while (i < files)
 	{
+		if (val->next)
+			val = val->next;
 		dirp = opendir(val->name);
 		printf("Opening Dir = %s\n", val->name);
 		if (dirp == NULL)
@@ -113,18 +99,14 @@ void	send_to_display(int files, t_opt *opt, t_lst *val, t_lst *lst)
 			ft_errordir(val->name);
 			exit(0);
 		}
-		ft_display(dirp, opt, lst);
+		ft_read_dir(dirp, opt, lst);
 		closedir(dirp);
-		if (val->next)
-			val = val->next;
-		if (lst->next)
-			lst = lst->next;
 		i++;
 	}
 	if (files == 0)
 	{
 		dirp = opendir(".");
-		ft_display(dirp, opt, lst);
+		ft_read_dir(dirp, opt, lst);
 		closedir(dirp);
 	}
 }
@@ -139,10 +121,9 @@ int		main(int ac, char **av)
 	ft_init_option(&opt);
 	ft_init_list(&l);
 	ft_init_list(&values);
-	files =	ft_parseoption(ac, av, &opt);
-	ft_files_to_lst(ac, av, &values);
-	//ft_sort_list(); A implementer...
-	send_to_display(files, &opt, &values, &l);
-	ft_lst_display(&l);
+	ft_parseoption(ac, av, &opt);
+	files =	ft_files_to_lst(ac, av, &values);
+	ft_open_dir(files, &opt, &values, &l);
+	ft_lst_display(&l, &values);
 	return (0);
 }
