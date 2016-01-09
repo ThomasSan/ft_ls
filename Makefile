@@ -6,12 +6,12 @@
 #    By: mdebelle <mdebelle@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/12/01 18:33:59 by mdebelle          #+#    #+#              #
-#    Updated: 2016/01/02 11:45:16 by tsanzey          ###   ########.fr        #
+#    Updated: 2016/01/09 16:01:54 by tsanzey          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_ls
-SRC = main.c info.c parseopt.c 
+SRC = main.c info.c parseopt.c lst_manip.c display.c
 
 OBJ = $(SRC:%.c=obj/%.o)
 

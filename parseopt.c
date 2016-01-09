@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/29 16:44:45 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/08 17:49:36 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/09 13:51:12 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	add_name_tlst(t_lst **l, char *argv)
 		return ;
 	new->name = ft_strdup(argv);
 	tmp = *l;
-	while (tmp->next && tmp->next->name[0] < new->name[0])
+	while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
 		tmp = tmp->next;
 	new->next = tmp->next;
 	tmp->next = new;
@@ -90,39 +90,4 @@ int		ft_files_to_lst(int ac, char **av, t_lst *lst)
 		i++;
 	}
 	return (files);
-}
-
-void	ft_swapstrings(char **s1, char **s2)
-{
-	char *tmp;
-	char *tmp1;
-	char *tmp2;
-
-	tmp1 = *s1;
-	tmp2 = *s2;
-	tmp = ft_strdup(*s1);
-	*s1 = ft_strdup(*s2);
-	*s2 = ft_strdup(tmp);
-	free(tmp);
-	free(tmp1);
-	free(tmp2);
-}
-
-void	ft_sorttab(char **tab, int files)
-{
-	int	i;
-	int	j;
-
-	j = 0;
-	while (j < files - 1)
-	{
-		i = 0;
-		while (i < files - 1)
-		{
-			if (ft_strncmp(tab[i], tab[i + 1], 1) > 0)
-				ft_swapstrings(&tab[i], &tab[i + 1]);
-			i++;
-		}
-		j++;
-	}
 }
