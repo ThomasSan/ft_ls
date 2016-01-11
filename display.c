@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/09 16:03:23 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/09 18:06:58 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/11 12:45:13 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	ft_lst_display(t_lst *l, t_lst *val, t_opt *opt)
 	{
 		if (ft_strcmp(l->name, ".") == 0 && val->name)
 		{
-			printf("%s:\ntotal 0\n", val->name);
+		//	printf("%s:\ntotal 0\n", val->name);
 			val = val->next;
 		}
 		if (opt->opt_l == 1 && l->name[0] != '.')
@@ -47,6 +47,5 @@ void	ft_recursive_display(char *name)
 	while ((dp = readdir(dirp)))
 	{
 		printf("%s\n", dp->d_name);
-		if ()
 	}
 }

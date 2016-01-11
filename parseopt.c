@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/29 16:44:45 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/09 13:51:12 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/11 12:03:06 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,22 +53,31 @@ void	ft_parseoption(int argc, char **argv, t_opt *opt)
 	}
 }
 
-void	add_name_tlst(t_lst **l, char *argv)
+t_lst	*add_name_tlst(t_lst *l, char *argv)
 {
 	t_lst	*new;
 	t_lst	*tmp;
 
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
-		return ;
+		return NULL;
 	new->name = ft_strdup(argv);
-	tmp = *l;
-	while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
-		tmp = tmp->next;
-	new->next = tmp->next;
-	tmp->next = new;
+	if (l == NULL || ft_strcmp(l->name, new->name) >= 0)
+	{
+		new->next = l;
+		l = new;
+	}
+	else
+	{
+		tmp = l;
+		while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
+			tmp = tmp->next;
+		new->next = tmp->next;
+		tmp->next = new;
+	}
+	return (l);
 }
 
-int		ft_files_to_lst(int ac, char **av, t_lst *lst)
+int		ft_files_to_lst(int ac, char **av, t_lst **lst)
 {
 	int i;
 	int	files;
@@ -83,7 +92,7 @@ int		ft_files_to_lst(int ac, char **av, t_lst *lst)
 				ft_errordir(av[i]);
 			else
 			{
-				add_name_tlst(&lst, av[i]);
+				*lst  = add_name_tlst(*lst, av[i]);
 				files++;
 			}
 		}

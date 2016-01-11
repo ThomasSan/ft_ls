@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 13:41:06 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/09 17:56:38 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/11 13:50:01 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,19 @@ typedef struct		s_names
 	struct s_names	*next;
 }					t_names;
 
+void				test_disp(t_lst *l);
 void				ft_recursive_display(char *name);
 void				ft_lst_display(t_lst *l, t_lst *val, t_opt *opt);
 void				ft_init_list(t_lst *l);
+void				ft_lst_clr(t_lst **l);
 void				ft_init_option(t_opt *opt);
 void				ft_inspect_file(char *str, t_lst **l);
 void				ft_usage(char c);
 void				ft_sorttab(char **tab, int files);
 void				ft_errordir(char *s);
-void				ft_firstfile(char *name, t_lst *lst);
+void				ft_firstfile(t_lst *l, char *name);
 void				ft_parseoption(int argc, char **argv, t_opt *opt);
-int					ft_files_to_lst(int ac, char **av, t_lst *lst);
+int					ft_files_to_lst(int ac, char **av, t_lst **lst);
 int					ft_get_total(char *name, int blocks);
 
 #endif

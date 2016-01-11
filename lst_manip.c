@@ -6,17 +6,11 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/09 16:03:36 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/09 16:03:37 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/11 12:16:17 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-void	ft_firstfile(char *name, t_lst *l)
-{
-	l->name = ft_strdup(name);
-	l->next = NULL;
-}
 
 void	ft_init_option(t_opt *opt)
 {
@@ -37,4 +31,19 @@ void	ft_init_list(t_lst *l)
 	l->links = 0;
 	l->size = 0;
 	l->next = NULL;
+}
+
+void	ft_lst_clr(t_lst **l)
+{
+	t_lst	*tmp;
+	t_lst	*to_free;
+
+	tmp = *l;
+	while (tmp)
+	{
+		to_free = tmp; 
+		tmp = tmp->next;
+		free(to_free);
+	}
+	*l = NULL;
 }

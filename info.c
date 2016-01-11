@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/09 11:46:08 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/11 11:43:03 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ void		ft_inspect_file(char *name, t_lst **l)
 	lstat(name, &filestat);
 	grp = getgrgid(filestat.st_gid);
 	pwd = getpwuid(filestat.st_uid);
+	// printf("filestat.mode = %d\n", filestat.st_mode);
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
 		return ;
 	new->name = ft_strdup(name);
@@ -100,11 +101,19 @@ void		ft_inspect_file(char *name, t_lst **l)
 	new->gid = ft_strdup(grp->gr_name);
 	new->size = filestat.st_size;
 	new->time = ft_get_time(ctime(&filestat.st_mtime));
-	tmp = *l;
-	while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
-		tmp = tmp->next;
-	new->next = tmp->next;
-	tmp->next = new;
+	if (*l == NULL || ft_strcmp((*l)->name, new->name) >= 0)
+	{
+		new->next = *l;
+		*l = new;
+	}
+	else
+	{
+		tmp = *l;
+		while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
+			tmp = tmp->next;
+		new->next = tmp->next;
+		tmp->next = new;
+	}
 }
 
 int			ft_get_total(char *name, int blocks)
