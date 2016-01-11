@@ -26,37 +26,34 @@ void	ft_errordir(char *s)
 	perror(s);
 }
 
-void	ft_read_dir(DIR *dirp, t_lst *l)
+void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt)
 {
 	struct dirent	*dp;
 	int				total;
 
+	(void)opt;
 	total = 0;
 	while ((dp = readdir(dirp)) != NULL)
 		ft_inspect_file(dp->d_name, &l);
-	test_disp(l);
+	ft_lst_display(l, opt);
+	ft_lst_clr(&l);
+	// test_disp(l);
+	// ft_lst_get_d(&l);
+	// test_disp(l);
 }
 
-void	ft_open_dir(int files, char *name, t_lst *lst)
+void	ft_open_dir(char *name, t_lst *lst, t_opt *opt)
 {
 	DIR *dirp;
 
-	if (files == 0)
+
+	dirp = opendir(name);
+	if (dirp == NULL)
 	{
-		dirp = opendir(".");
-		ft_read_dir(dirp, lst);
+		ft_errordir(name);
+		exit(0);
 	}
-	else
-	{
-		dirp = opendir(name);
-		if (dirp == NULL)
-		{
-			printf("name = %s\n", name);
-			ft_errordir(name);
-			exit(0);
-		}
-		ft_read_dir(dirp, lst);
-	}
+	ft_read_dir(dirp, lst, opt);
 	closedir(dirp);
 }
 
@@ -70,6 +67,26 @@ void	test_disp(t_lst *l)
 		l = l->next;
 	}
 }
+
+void	ft_send_files(int files, t_lst *values, t_lst *l, t_opt *opt)
+{
+	t_lst		*recursive;
+
+	recursive = NULL;
+	while (values)
+	{
+		if (files > 1)
+			printf("%s :\n", values->name);
+		if (opt->opt_l == 1)
+			printf("total 0\n");//define total later
+		ft_open_dir(values->name, l, opt);
+		values = values->next;
+		printf("\n");
+	}
+	if (files == 0)
+		ft_open_dir(".", l, opt);
+}
+
 int		main(int ac, char **av)
 {
 	int				files;
@@ -83,26 +100,7 @@ int		main(int ac, char **av)
 	ft_init_option(&opt);
 	ft_parseoption(ac, av, &opt);
 	files =	ft_files_to_lst(ac, av, &values);
-	printf("files = %d, values->name = %s\n", files, values->name);
-	while (values)
-	{
-		printf("%s :\ntotal 0\n", values->name);//define total later
-		ft_open_dir(files, values->name, l);
-		values = values->next;
-		printf("\n");
-	}
-	/*if (opt.opt_rec == 1)
-	{
-		values = *values.next;
-		while (values.name)
-		{
-			ft_recursive_display(values.name);
-			values = *values.next;
-		}
-	}
-	else
-		ft_lst_display(&l, &values, &opt);
-	ft_lst_clr(&values);*/
+	ft_send_files(files, values, l, &opt);
 	ft_lst_clr(&values);
 	return (0);
 }

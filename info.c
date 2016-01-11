@@ -47,14 +47,13 @@ char		*ft_get_time(char *s)
     else if (S_ISFIFO(mode))
         c = 'p';
     else if (S_ISLNK(mode))
-    {
-    	l->is_link = 1;
         c = 'l';
-    }
     else if (S_ISSOCK(mode))
         c = 's';
     else
         c = '?';
+    l->is_link = (c == 'l') ? 1 : 0;
+    l->dir = (c == 'd') ? 1 : 0;
     return(c);
 }
 

@@ -47,3 +47,19 @@ void	ft_lst_clr(t_lst **l)
 	}
 	*l = NULL;
 }
+
+void	ft_lst_get_d(t_lst **l)
+{
+	t_lst	*tmp;
+
+	tmp = *l;
+	while (tmp)
+	{
+		if (tmp->dir == 1 && ft_strcmp(tmp->name, ".") != 0 && ft_strcmp(tmp->name, "..") != 0)
+		{
+			printf("\e[33mkeeped : \e[0m%s\n", tmp->name);
+			//Il faut maintenant copier ca dans la liste chainee que tu veux sauvegarder !!! 
+		}
+		tmp = tmp->next;
+	}
+}

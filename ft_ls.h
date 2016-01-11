@@ -41,6 +41,7 @@ typedef struct		s_lst
 	int				links;
 	int				size;
 	int				is_link;
+	int				dir;
 	struct s_lst	*next;
 }					t_lst;
 
@@ -51,8 +52,9 @@ typedef struct		s_names
 }					t_names;
 
 void				test_disp(t_lst *l);
+void				ft_lst_get_d(t_lst **l);
 void				ft_recursive_display(char *name);
-void				ft_lst_display(t_lst *l, t_lst *val, t_opt *opt);
+void				ft_lst_display(t_lst *l, t_opt *opt);
 void				ft_init_list(t_lst *l);
 void				ft_lst_clr(t_lst **l);
 void				ft_init_option(t_opt *opt);
