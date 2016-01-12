@@ -26,26 +26,35 @@ void	ft_errordir(char *s)
 	perror(s);
 }
 
-void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt)
+void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt, char *name)
 {
 	struct dirent	*dp;
 	int				total;
+	t_lst			*ret;
 
 	(void)opt;
 	total = 0;
+	printf("%s:\n", name);
 	while ((dp = readdir(dirp)) != NULL)
-		ft_inspect_file(dp->d_name, &l);
+		ft_inspect_file(name, dp->d_name, &l);
 	ft_lst_display(l, opt);
+	printf("\n");
+	if (opt->opt_rec == 1)
+	{
+		ft_lst_get_d(&l, &ret);
+		ft_lst_clr(&l);
+		while (ret)
+		{
+			ft_open_dir(cat_path(name, ret->name), l, opt);
+			ret = ret->next;
+		}
+	}
 	ft_lst_clr(&l);
-	// test_disp(l);
-	// ft_lst_get_d(&l);
-	// test_disp(l);
 }
 
-void	ft_open_dir(char *name, t_lst *lst, t_opt *opt)
+void	ft_open_dir(char *name, t_lst *l, t_opt *opt)
 {
-	DIR *dirp;
-
+	DIR		*dirp;
 
 	dirp = opendir(name);
 	if (dirp == NULL)
@@ -53,8 +62,9 @@ void	ft_open_dir(char *name, t_lst *lst, t_opt *opt)
 		ft_errordir(name);
 		exit(0);
 	}
-	ft_read_dir(dirp, lst, opt);
+	ft_read_dir(dirp, l, opt, name);
 	closedir(dirp);
+
 }
 
 void	test_disp(t_lst *l)
@@ -70,13 +80,9 @@ void	test_disp(t_lst *l)
 
 void	ft_send_files(int files, t_lst *values, t_lst *l, t_opt *opt)
 {
-	t_lst		*recursive;
-
-	recursive = NULL;
 	while (values)
 	{
-		if (files > 1)
-			printf("%s :\n", values->name);
+		// if (files > 1)
 		if (opt->opt_l == 1)
 			printf("total 0\n");//define total later
 		ft_open_dir(values->name, l, opt);
@@ -96,7 +102,7 @@ int		main(int ac, char **av)
 
 	files = 0;
 	l = NULL;
-	values =NULL;
+	values = NULL;
 	ft_init_option(&opt);
 	ft_parseoption(ac, av, &opt);
 	files =	ft_files_to_lst(ac, av, &values);

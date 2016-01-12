@@ -79,18 +79,20 @@ char	*ft_getrights(int mode, t_lst *l)
     return (bits);
 }
 
-void		ft_inspect_file(char *name, t_lst **l)
+void		ft_inspect_file(char *dir_name, char *name, t_lst **l)
 {
 	struct stat		filestat;
 	struct passwd	*pwd;
 	struct group	*grp;
 	t_lst			*new;
 	t_lst			*tmp;
+	char			*str_name;
 
-	lstat(name, &filestat);
+	str_name = cat_path(dir_name, name);
+	// printf("\n\n%s :\n", str_name);
+	lstat(str_name, &filestat);
 	grp = getgrgid(filestat.st_gid);
 	pwd = getpwuid(filestat.st_uid);
-	// printf("filestat.mode = %d\n", filestat.st_mode);
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
 		return ;
 	new->name = ft_strdup(name);

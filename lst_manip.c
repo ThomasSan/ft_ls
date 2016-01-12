@@ -48,7 +48,8 @@ void	ft_lst_clr(t_lst **l)
 	*l = NULL;
 }
 
-void	ft_lst_get_d(t_lst **l)
+//Implementer une Sorted_LST pour cette function
+void	ft_lst_get_d(t_lst **l, t_lst **ret)
 {
 	t_lst	*tmp;
 
@@ -57,9 +58,51 @@ void	ft_lst_get_d(t_lst **l)
 	{
 		if (tmp->dir == 1 && ft_strcmp(tmp->name, ".") != 0 && ft_strcmp(tmp->name, "..") != 0)
 		{
-			printf("\e[33mkeeped : \e[0m%s\n", tmp->name);
-			//Il faut maintenant copier ca dans la liste chainee que tu veux sauvegarder !!! 
+			/*tmp1 = *ret;
+			if(!(new = (t_lst*)malloc(sizeof(t_lst))))
+				return ;
+			new->name = ft_strdup(tmp->name);
+			new->next = NULL;
+			if (ret == NULL, ft_strcmp(l->name, new->name))
+			{
+				*ret = new;
+			}
+			else
+			{
+				while (tmp1->next)
+					tmp1 = tmp1->next;
+				tmp1->next = new;
+			}*/
+			*ret = add_name_tlst(*ret, tmp->name);
 		}
 		tmp = tmp->next;
 	}
+}
+
+char	*cat_path(char *s1, char *s2)
+{
+	char	*dst;
+	int		len;
+ 	int		i;
+ 	int		j;
+
+ 	i = 0;
+ 	j = 0;
+ 	len = ft_strlen(s1) + ft_strlen(s2);
+	if (!(dst = (char *)malloc(sizeof(char) * len + 2)))
+		return (NULL);
+	while (s1[i])
+	{
+		dst[i] = s1[i];
+		i++;
+	}
+	dst[i] = '/';
+	i++;
+	while (s2[j])
+	{
+		dst[i + j] = s2[j];
+		j++;
+	}
+	dst[i + j] = '\0';
+	return (dst);
 }
