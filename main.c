@@ -103,7 +103,6 @@ int		main(int ac, char **av)
 	ft_init_option(&opt);
 	ft_parseoption(ac, av, &opt);
 	files =	ft_files_to_lst(ac, av, &values);
-	printf("files = %d,\n", files);
 	ft_send_files(files, values, l, &opt);
 	ft_lst_clr(&values);
 	return (0);

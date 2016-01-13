@@ -85,25 +85,19 @@ int		ft_files_to_lst(int ac, char **av, t_lst **lst)
 {
 	int i;
 	int	files;
-	// int	flag;
 
 	i = 1;
 	files = 0;
-	// flag = 0;
+	while(i < ac && ft_strncmp(av[i], "-", 1) == 0)
+		i++;
 	while(i < ac)
-	{		
-		// if (ft_strncmp(av[i], "-", 1) == 0 && flag == 0)
-			// i++;
-		if (ft_strncmp(av[i], "-", 1) != 0 )
+	{
+		if (opendir(av[i]) == NULL)
+			ft_errordir(av[i]);
+		else
 		{
-			// flag = 1;
-			if (opendir(av[i]) == NULL)
-				ft_errordir(av[i]);
-			else
-			{
-				*lst  = add_name_tlst(*lst, av[i]);
-				files++;
-			}
+			*lst  = add_name_tlst(*lst, av[i]);
+			files++;
 		}
 		i++;
 	}
