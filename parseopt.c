@@ -19,23 +19,24 @@ int		ft_optionselect(char *s, t_opt *opt)
 	i = 1;
 	while (s[i])
 	{
-		if(s[i] == 'a')
+		if (s[i] == 'a')
 			opt->opt_a = 1;
-		if(s[i] == 'l')
+		if (s[i] == 'l')
 			opt->opt_l = 1;
-		if(s[i] == 'r')
+		if (s[i] == 'r')
 			opt->opt_r = 1;
-		if(s[i] == 't')
+		if (s[i] == 't')
 			opt->opt_t = 1;
-		if(s[i] == 'R')
+		if (s[i] == 'R')
 			opt->opt_rec = 1;
-		if(s[i] != 'R' && s[i] != 'a' && s[i] != 'l' && s[i] != 'r' && s[i] != 't')
+		if (s[i] != 'R' && s[i] != 'a' && s[i] != 'l' && s[i] != 'r' &&
+			s[i] != 't')
 		{
 			ft_usage(s[i]);
 			exit(0);
 			return (-1);
 		}
-		i++;	
+		i++;
 	}
 	return (0);
 }
@@ -63,7 +64,7 @@ t_lst	*add_name_tlst(t_lst *l, char *argv)
 	t_lst	*tmp;
 
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
-		return NULL;
+		return (NULL);
 	new->name = ft_strdup(argv);
 	if (l == NULL || ft_strcmp(l->name, new->name) >= 0)
 	{
@@ -88,17 +89,12 @@ int		ft_files_to_lst(int ac, char **av, t_lst **lst)
 
 	i = 1;
 	files = 0;
-	while(i < ac && ft_strncmp(av[i], "-", 1) == 0)
+	while (i < ac && ft_strncmp(av[i], "-", 1) == 0)
 		i++;
-	while(i < ac)
+	while (i < ac)
 	{
-		if (opendir(av[i]) == NULL)
-			ft_errordir(av[i]);
-		else
-		{
-			*lst  = add_name_tlst(*lst, av[i]);
-			files++;
-		}
+		*lst = add_name_tlst(*lst, av[i]);
+		files++;
 		i++;
 	}
 	return (files);

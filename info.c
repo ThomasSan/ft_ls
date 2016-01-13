@@ -12,7 +12,7 @@
 
 #include "ft_ls.h"
 
-char		*ft_get_time(char *s)
+char	*ft_get_time(char *s)
 {
 	char	*str;
 	int		i;
@@ -20,7 +20,7 @@ char		*ft_get_time(char *s)
 
 	i = 4;
 	j = 0;
-	if(!(str = (char *)malloc(sizeof(char) * 13)))
+	if (!(str = (char *)malloc(sizeof(char) * 13)))
 		return (NULL);
 	while (i < 16)
 	{
@@ -32,76 +32,57 @@ char		*ft_get_time(char *s)
 	return (str);
 }
 
- char	filetype(int mode, t_lst *l)
+char	filetype(int mode, t_lst *l)
 {
 	char c;
 
 	if (S_ISREG(mode))
 		c = '-';
 	else if (S_ISDIR(mode))
-        c = 'd';
-    else if (S_ISBLK(mode))
-        c = 'b';
-    else if (S_ISCHR(mode))
-        c = 'c';
-    else if (S_ISFIFO(mode))
-        c = 'p';
-    else if (S_ISLNK(mode))
-        c = 'l';
-    else if (S_ISSOCK(mode))
-        c = 's';
-    else
-        c = '?';
-    l->is_link = (c == 'l') ? 1 : 0;
-    l->dir = (c == 'd') ? 1 : 0;
-    return(c);
+		c = 'd';
+	else if (S_ISBLK(mode))
+		c = 'b';
+	else if (S_ISCHR(mode))
+		c = 'c';
+	else if (S_ISFIFO(mode))
+		c = 'p';
+	else if (S_ISLNK(mode))
+		c = 'l';
+	else if (S_ISSOCK(mode))
+		c = 's';
+	else
+		c = '?';
+	l->is_link = (c == 'l') ? 1 : 0;
+	l->dir = (c == 'd') ? 1 : 0;
+	return (c);
 }
 
 char	*ft_getrights(int mode, t_lst *l)
 {
 	static const char	*rwx[] = {"---", "--x", "-w-", "-wx",
-    "r--", "r-x", "rw-", "rwx"};
-    char			*bits;
+		"r--", "r-x", "rw-", "rwx"};
+	char				*bits;
 
-    if (!(bits = (char *)malloc(sizeof(char) * 11)))
-    	return (NULL);
-    bits[0] = filetype(mode, l);
-    ft_strcpy(&bits[1], rwx[(mode >> 6) & 7]);
-    ft_strcpy(&bits[4], rwx[(mode >> 3) & 7]);
-    ft_strcpy(&bits[7], rwx[(mode & 7)]);
-    if (mode & S_ISUID)
-    	bits[3] = (mode & S_IXUSR) ? 's' : 'S';
-    if (mode & S_ISGID)
-    	bits[6] = (mode & S_IXGRP) ? 's' : 'l';
-    if (mode & S_ISVTX)
-    	bits[9] = (mode & S_IXUSR) ? 't' : 'T';
-    bits[10] = '\0';
-    return (bits);
+	if (!(bits = (char *)malloc(sizeof(char) * 11)))
+		return (NULL);
+	bits[0] = filetype(mode, l);
+	ft_strcpy(&bits[1], rwx[(mode >> 6) & 7]);
+	ft_strcpy(&bits[4], rwx[(mode >> 3) & 7]);
+	ft_strcpy(&bits[7], rwx[(mode & 7)]);
+	if (mode & S_ISUID)
+		bits[3] = (mode & S_IXUSR) ? 's' : 'S';
+	if (mode & S_ISGID)
+		bits[6] = (mode & S_IXGRP) ? 's' : 'l';
+	if (mode & S_ISVTX)
+		bits[9] = (mode & S_IXUSR) ? 't' : 'T';
+	bits[10] = '\0';
+	return (bits);
 }
 
-void		ft_inspect_file(char *dir_name, char *name, t_lst **l)
+void	add_file_sorted(t_lst **l, t_lst *new)
 {
-	struct stat		filestat;
-	struct passwd	*pwd;
-	struct group	*grp;
-	t_lst			*new;
-	t_lst			*tmp;
-	char			*str_name;
+	t_lst	*tmp;
 
-	str_name = cat_path(dir_name, name);
-	// printf("\n\n%s :\n", str_name);
-	lstat(str_name, &filestat);
-	grp = getgrgid(filestat.st_gid);
-	pwd = getpwuid(filestat.st_uid);
-	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
-		return ;
-	new->name = ft_strdup(name);
-	new->right = ft_getrights(filestat.st_mode, new);
-	new->links = filestat.st_nlink;
-	new->uid = ft_strdup(pwd->pw_name);
-	new->gid = ft_strdup(grp->gr_name);
-	new->size = filestat.st_size;
-	new->time = ft_get_time(ctime(&filestat.st_mtime));
 	if (*l == NULL || ft_strcmp((*l)->name, new->name) >= 0)
 	{
 		new->next = *l;
@@ -117,7 +98,76 @@ void		ft_inspect_file(char *dir_name, char *name, t_lst **l)
 	}
 }
 
-int			ft_get_total(char *name, int blocks)
+void	add_file_rev(t_lst **l, t_lst *new)
+{
+	t_lst	*tmp;
+
+	if (*l == NULL || ft_strcmp((*l)->name, new->name) <= 0)
+	{
+		new->next = *l;
+		*l = new;
+	}
+	else
+	{
+		tmp = *l;
+		while (tmp->next && ft_strcmp(tmp->next->name, new->name) > 0)
+			tmp = tmp->next;
+		new->next = tmp->next;
+		tmp->next = new;
+	}
+}
+
+/*
+void	add_file_time(t_lst **l, t_lst *new)
+{
+	t_lst	*tmp;
+
+	if (*l == NULL|| ft_strcmp((*l)->, new->name) >= 0)
+	{
+		new->next = *l;
+		*l = new;
+	}
+	else
+	{
+		tmp = *l;
+		while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
+			tmp = tmp->next;
+		new->next = tmp->next;
+		tmp->next = new;
+	}
+}
+*/
+
+void	ft_inspect_dir(char *dir_name, char *name, t_lst **l, t_opt *opt)
+{
+	struct stat		filestat;
+	struct passwd	*pwd;
+	struct group	*grp;
+	t_lst			*new;
+	char			*str_name;
+
+	str_name = cat_path(dir_name, name);
+	lstat(str_name, &filestat);
+	grp = getgrgid(filestat.st_gid);
+	pwd = getpwuid(filestat.st_uid);
+	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
+		return ;
+	new->name = ft_strdup(name);
+	new->right = ft_getrights(filestat.st_mode, new);
+	new->links = filestat.st_nlink;
+	new->uid = ft_strdup(pwd->pw_name);
+	new->gid = ft_strdup(grp->gr_name);
+	new->size = filestat.st_size;
+	new->time = ft_get_time(ctime(&filestat.st_mtime));
+	if (opt->opt_r == 1)
+		add_file_rev(l, new);
+/*	else if (opt->opt_t == 1)
+		add_file_time(l, new);*/
+	else
+		add_file_sorted(l, new);
+}
+
+int		ft_get_total(char *name, int blocks)
 {
 	struct stat filestat;
 

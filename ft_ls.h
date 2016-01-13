@@ -45,22 +45,16 @@ typedef struct		s_lst
 	struct s_lst	*next;
 }					t_lst;
 
-typedef struct		s_names
-{
-	char			*name;
-	struct s_names	*next;
-}					t_names;
-
 /**** OPEN & READ DIRECTORIES ****/
 void				ft_open_dir(char *name, t_lst *l, t_opt *opt);
 void				ft_send_files(int files, t_lst *values, t_lst *l, t_opt *opt);
-void				ft_inspect_file(char *dir_name, char *str, t_lst **l);
+void				ft_inspect_dir(char *dir_name, char *str, t_lst **l, t_opt *opt);
 
 /**** LST MANIPULATION FUNCTIONS ****/
 void				test_disp(t_lst *l);
 void				ft_lst_get_d(t_lst **l, t_lst **ret);
-void				ft_init_list(t_lst *l);
 void				ft_lst_clr(t_lst **l);
+void				ft_lst_clr_name(t_lst **l);
 void				ft_init_option(t_opt *opt);
 void				ft_parseoption(int argc, char **argv, t_opt *opt);
 int					ft_files_to_lst(int ac, char **av, t_lst **lst);

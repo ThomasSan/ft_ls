@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "ft_ls.h"
 
 void	ft_usage(char c)
@@ -34,7 +33,7 @@ void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt, char *name)
 
 	total = 0;
 	while ((dp = readdir(dirp)) != NULL)
-		ft_inspect_file(name, dp->d_name, &l);
+		ft_inspect_dir(name, dp->d_name, &l, opt);
 	ft_lst_display(l, opt);
 	printf("\n");
 	if (opt->opt_rec == 1)
@@ -46,33 +45,31 @@ void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt, char *name)
 			ft_open_dir(cat_path(name, ret->name), l, opt);
 			ret = ret->next;
 		}
+		ft_lst_clr(&ret);
 	}
 	ft_lst_clr(&l);
 }
 
 void	ft_open_dir(char *name, t_lst *l, t_opt *opt)
 {
-	DIR		*dirp;
+	DIR			*dirp;
+	struct stat	filestat;
 
 	dirp = opendir(name);
 	if (dirp == NULL)
 	{
+		if (lstat(name, &filestat) == 0)
+		{
+			ft_inspect_file(name, l, opt);
+			ft_lst_display(l, opt);
+			ft_lst_clr(&l);
+		}
 		ft_errordir(name);
-		exit(0);
 	}
-	ft_read_dir(dirp, l, opt, name);
-	closedir(dirp);
-
-}
-
-void	test_disp(t_lst *l)
-{
-	if (l == NULL)
-		printf("Linked List is \033[31mEMPTY\033[0m\n");
-	while (l)
+	else
 	{
-		printf("%s\n", l->name);
-		l = l->next;
+		ft_read_dir(dirp, l, opt, name);
+		closedir(dirp);
 	}
 }
 
@@ -84,7 +81,6 @@ void	ft_send_files(int files, t_lst *values, t_lst *l, t_opt *opt)
 			printf("total 0\n");//define total later
 		ft_open_dir(values->name, l, opt);
 		values = values->next;
-		// printf("\n");
 	}
 	if (files == 0)
 		ft_open_dir(".", l, opt);
@@ -97,13 +93,12 @@ int		main(int ac, char **av)
 	t_lst			*l;
 	t_lst			*values;
 
-	files = 0;
 	l = NULL;
 	values = NULL;
 	ft_init_option(&opt);
 	ft_parseoption(ac, av, &opt);
-	files =	ft_files_to_lst(ac, av, &values);
+	files = ft_files_to_lst(ac, av, &values);
 	ft_send_files(files, values, l, &opt);
-	ft_lst_clr(&values);
+	ft_lst_clr_name(&values);
 	return (0);
 }
