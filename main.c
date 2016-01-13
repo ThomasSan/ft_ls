@@ -6,7 +6,7 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/27 10:58:57 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/11 13:50:54 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/13 15:08:52 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,7 @@ void	ft_read_dir(DIR *dirp, t_lst *l, t_opt *opt, char *name)
 	int				total;
 	t_lst			*ret;
 
-	(void)opt;
 	total = 0;
-	printf("%s:\n", name);
 	while ((dp = readdir(dirp)) != NULL)
 		ft_inspect_file(name, dp->d_name, &l);
 	ft_lst_display(l, opt);
@@ -82,12 +80,11 @@ void	ft_send_files(int files, t_lst *values, t_lst *l, t_opt *opt)
 {
 	while (values)
 	{
-		// if (files > 1)
 		if (opt->opt_l == 1)
 			printf("total 0\n");//define total later
 		ft_open_dir(values->name, l, opt);
 		values = values->next;
-		printf("\n");
+		// printf("\n");
 	}
 	if (files == 0)
 		ft_open_dir(".", l, opt);
@@ -106,6 +103,7 @@ int		main(int ac, char **av)
 	ft_init_option(&opt);
 	ft_parseoption(ac, av, &opt);
 	files =	ft_files_to_lst(ac, av, &values);
+	printf("files = %d,\n", files);
 	ft_send_files(files, values, l, &opt);
 	ft_lst_clr(&values);
 	return (0);

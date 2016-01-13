@@ -43,12 +43,16 @@ int		ft_optionselect(char *s, t_opt *opt)
 void	ft_parseoption(int argc, char **argv, t_opt *opt)
 {
 	int	i;
+	int	flag;
 
 	i = 1;
-	while (i < argc)
+	flag = 0;
+	while (i < argc && flag == 0)
 	{
 		if (ft_strncmp(argv[i], "-", 1) == 0)
 			ft_optionselect(argv[i], opt);
+		if (ft_strncmp(argv[i], "-", 1) != 0)
+			flag = 1;
 		i++;
 	}
 }
@@ -81,13 +85,18 @@ int		ft_files_to_lst(int ac, char **av, t_lst **lst)
 {
 	int i;
 	int	files;
+	// int	flag;
 
 	i = 1;
 	files = 0;
+	// flag = 0;
 	while(i < ac)
-	{
-		if (ft_strncmp(av[i], "-", 1) != 0)
+	{		
+		// if (ft_strncmp(av[i], "-", 1) == 0 && flag == 0)
+			// i++;
+		if (ft_strncmp(av[i], "-", 1) != 0 )
 		{
+			// flag = 1;
 			if (opendir(av[i]) == NULL)
 				ft_errordir(av[i]);
 			else
