@@ -6,13 +6,13 @@
 /*   By: tsanzey <tsanzey@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/28 10:23:59 by tsanzey           #+#    #+#             */
-/*   Updated: 2016/01/11 11:43:03 by tsanzey          ###   ########.fr       */
+/*   Updated: 2016/01/20 15:03:32 by tsanzey          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-char	*ft_get_time(char *s)
+char	*ft_get_time(char *s, t_lst *new)
 {
 	char	*str;
 	int		i;
@@ -22,12 +22,18 @@ char	*ft_get_time(char *s)
 	j = 0;
 	if (!(str = (char *)malloc(sizeof(char) * 13)))
 		return (NULL);
-	while (i < 16)
+	if (((int)time(NULL) - new->date > 31536000) ||
+			((int)time(NULL) - new->date < -31536000))
 	{
-		str[j] = s[i];
-		i++;
-		j++;
+		while (i < 11)
+			str[j++] = s[i++];
+		str[j++] = ' ';
+		i = 20;
+		while (i < 24)
+			str[j++] = s[i++];
 	}
+	while (i < 16)
+		str[j++] = s[i++];
 	str[j] = '\0';
 	return (str);
 }
@@ -79,75 +85,16 @@ char	*ft_getrights(int mode, t_lst *l)
 	return (bits);
 }
 
-void	add_file_sorted(t_lst **l, t_lst *new)
-{
-	t_lst	*tmp;
-
-	if (*l == NULL || ft_strcmp((*l)->name, new->name) >= 0)
-	{
-		new->next = *l;
-		*l = new;
-	}
-	else
-	{
-		tmp = *l;
-		while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
-			tmp = tmp->next;
-		new->next = tmp->next;
-		tmp->next = new;
-	}
-}
-
-void	add_file_rev(t_lst **l, t_lst *new)
-{
-	t_lst	*tmp;
-
-	if (*l == NULL || ft_strcmp((*l)->name, new->name) <= 0)
-	{
-		new->next = *l;
-		*l = new;
-	}
-	else
-	{
-		tmp = *l;
-		while (tmp->next && ft_strcmp(tmp->next->name, new->name) > 0)
-			tmp = tmp->next;
-		new->next = tmp->next;
-		tmp->next = new;
-	}
-}
-
-/*
-void	add_file_time(t_lst **l, t_lst *new)
-{
-	t_lst	*tmp;
-
-	if (*l == NULL|| ft_strcmp((*l)->, new->name) >= 0)
-	{
-		new->next = *l;
-		*l = new;
-	}
-	else
-	{
-		tmp = *l;
-		while (tmp->next && ft_strcmp(tmp->next->name, new->name) < 0)
-			tmp = tmp->next;
-		new->next = tmp->next;
-		tmp->next = new;
-	}
-}
-*/
-
-void	ft_inspect_dir(char *dir_name, char *name, t_lst **l, t_opt *opt)
+void	ft_inspect_dir(char *path_name, char *name, t_lst **l, t_opt *opt)
 {
 	struct stat		filestat;
 	struct passwd	*pwd;
 	struct group	*grp;
+	char			*dir;
 	t_lst			*new;
-	char			*str_name;
 
-	str_name = cat_path(dir_name, name);
-	lstat(str_name, &filestat);
+	dir = cat_path(path_name, name);
+	lstat(dir, &filestat);
 	grp = getgrgid(filestat.st_gid);
 	pwd = getpwuid(filestat.st_uid);
 	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
@@ -155,23 +102,37 @@ void	ft_inspect_dir(char *dir_name, char *name, t_lst **l, t_opt *opt)
 	new->name = ft_strdup(name);
 	new->right = ft_getrights(filestat.st_mode, new);
 	new->links = filestat.st_nlink;
-	new->uid = ft_strdup(pwd->pw_name);
-	new->gid = ft_strdup(grp->gr_name);
+	new->uid = pwd ? ft_strdup(pwd->pw_name) : NULL;
+	new->gid = grp ? ft_strdup(grp->gr_name) : NULL;
 	new->size = filestat.st_size;
-	new->time = ft_get_time(ctime(&filestat.st_mtime));
-	if (opt->opt_r == 1)
-		add_file_rev(l, new);
-/*	else if (opt->opt_t == 1)
-		add_file_time(l, new);*/
-	else
-		add_file_sorted(l, new);
+	ft_minor_major(filestat, &new->major, &new->minor);
+	new->date = filestat.st_mtime;
+	new->time = ft_get_time(ctime(&filestat.st_mtime), new);
+	new->symlink = new->is_link ? ft_get_link(dir) : NULL;
+	sort_lst(l, new, opt);
+	free(dir);
 }
 
-int		ft_get_total(char *name, int blocks)
+void	ft_inspect_file(char *name, t_lst **l, t_opt *opt)
 {
-	struct stat filestat;
+	struct stat		filestat;
+	struct passwd	*pwd;
+	struct group	*grp;
+	t_lst			*new;
 
-	stat(name, &filestat);
-	blocks = blocks + (filestat.st_blocks);
-	return (blocks);
+	lstat(name, &filestat);
+	grp = getgrgid(filestat.st_gid);
+	pwd = getpwuid(filestat.st_uid);
+	if (!(new = (t_lst*)malloc(sizeof(t_lst))))
+		return ;
+	new->name = ft_strdup(name);
+	new->right = ft_getrights(filestat.st_mode, new);
+	new->links = filestat.st_nlink;
+	new->uid = pwd ? ft_strdup(pwd->pw_name) : NULL;
+	new->gid = grp ? ft_strdup(grp->gr_name) : NULL;
+	new->size = filestat.st_size;
+	new->date = filestat.st_mtime;
+	new->time = ft_get_time(ctime(&filestat.st_mtime), new);
+	new->symlink = new->is_link ? ft_get_link(name) : NULL;
+	sort_lst(l, new, opt);
 }

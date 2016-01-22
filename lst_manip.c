@@ -18,7 +18,15 @@ void	ft_init_option(t_opt *opt)
 	opt->opt_l = 0;
 	opt->opt_r = 0;
 	opt->opt_t = 0;
+	opt->total = 0;
+	opt->is_dir = 0;
 	opt->opt_rec = 0;
+	opt->len_name = 0;
+	opt->len_grp = 0;
+	opt->len_link = 0;
+	opt->len_size = 0;
+	opt->len_major = 0;
+	opt->len_minor = 0;
 }
 
 void	ft_lst_clr(t_lst **l)
@@ -36,6 +44,7 @@ void	ft_lst_clr(t_lst **l)
 		free(to_free->gid);
 		free(to_free->right);
 		free(to_free->time);
+		free(to_free->symlink);
 		free(to_free);
 	}
 	*l = NULL;
@@ -56,6 +65,7 @@ void	ft_lst_clr_name(t_lst **l)
 	}
 	*l = NULL;
 }
+
 void	ft_lst_get_d(t_lst **l, t_lst **ret)
 {
 	t_lst	*tmp;
