@@ -89,7 +89,8 @@ int		ft_files_to_lst(int ac, char **av, t_lst **lst)
 
 	i = 1;
 	files = 0;
-	while (i < ac && ft_strncmp(av[i], "-", 1) == 0)
+	while (i < ac && ft_strncmp(av[i], "-", 1) == 0 &&
+		ft_strcmp(av[i], "-") != 0)
 		i++;
 	while (i < ac)
 	{
